@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from utils import access_nested_map, get_json
+from utils import access_nested_map, get_json, memoize
 from parameterized import parameterized, parameterized_class
 from unittest.mock import Mock, patch
 from typing import Any, Dict
@@ -44,6 +44,28 @@ class TestGetJson(unittest.TestCase):
         self.assertEqual(get_json(test_url), test_payload)
         resp_mock.assert_called_once_with(test_url)
 
+
+class TestMemoize(unittest.TestCase):
+    """ test Memoize """
+
+    def test_memoize(self):
+        """ test docs """
+
+
+        class TestClass:
+
+            def a_method(self):
+                return 42
+
+            @memoize
+            def a_property(self):
+                return self.a_method()
+
+        with patch.object(TestClass, "a_method", return_value=42) as mocked:
+            test_class = TestClass()
+            self.assertEqual(test_class.a_property, 42)
+            self.assertEqual(test_class.a_property, 42)
+            mocked.assert_called_once()
 
 
 if __name__ == '__main__':
